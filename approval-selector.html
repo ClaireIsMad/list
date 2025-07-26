@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Approval Group Selector</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    select { margin-bottom: 10px; }
+    #formLink { margin-top: 15px; }
+    .btn {
+      background-color: #0078d4;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    #copyMessage { color: green; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Select Approval Group</h2>
+
+  <label>Region:</label><br/>
+  <select id="regionDropdown" onchange="populateSalesOrg()">
+    <option value="">Select Region</option>
+    <option value="NA">NA</option>
+    <option value="EU">EU</option>
+    <option value="APAC">APAC</option>
+  </select><br/>
+
+  <label>Sales Org:</label><br/>
+  <select id="salesOrgDropdown" onchange="populateApprovalGroup()">
+    <option value="">Select Sales Org</option>
+  </select><br/>
+
+  <label>Approval Group:</label><br/>
+  <select id="approvalGroupDropdown" onchange="copyToClipboardAndShowLink()">
+    <option value="">Select Approval Group</option>
+  </select><br/>
+
+  <div id="copyMessage" style="display:none;">✅ Approval Group copied to clipboard!</div>
+
+  <div id="formLink" style="display:none;">
+    <a class="btn" href="https://yourtenant.sharepoint.com/sites/yoursite/Lists/YourList/NewForm.aspx" target="_blank">
+      📝 Go to SharePoint Form
+    </a>
+  </div>
+
+  <script>
+    const data = {
+      "NA": {
+        "1000": "NA Approver Group 1",
+        "1001": "NA Approver Group 2"
+      },
+      "EU": {
+        "2000": "EU Approver Group 1",
+        "2001": "EU Approver Group 2"
+      },
+      "APAC": {
+        "3000": "APAC Approver Group 1",
+        "3001": "APAC Approver Group 2"
+      }
+    };
+
+    function populateSalesOrg() {
+      const region = document.getElementById("regionDropdown").value;
+      const salesOrgDropdown = document.getElementById("salesOrgDropdown");
+      const approvalGroupDropdown = document.getElementById("approvalGroupDropdown");
+      const formLink = document.getElementById("formLink");
+      const copyMessage = document.getElementById("copyMessage");
+
+      salesOrgDropdown.innerHTML = '<option value="">Select Sales Org</option>';
+      approvalGroupDropdown.innerHTML = '<option value="">Select Approval Group</option>';
+      formLink.style.display = "none";
+      copyMessage.style.display = "none";
+
+      if (region && data[region]) {
+        for (let salesOrg in data[region]) {
+          let option = document.createElement("option");
+          option.value = salesOrg;
+          option.text = salesOrg;
+          salesOrgDropdown.add(option);
+        }
+      }
+    }
+
+    function populateApprovalGroup() {
+      const region = document.getElementById("regionDropdown").value;
+      const salesOrg = document.getElementById("salesOrgDropdown").value;
+      const approvalGroupDropdown = document.getElementById("approvalGroupDropdown");
+      const formLink = document.getElementById("formLink");
+      const copyMessage = document.getElementById("copyMessage");
+
+      approvalGroupDropdown.innerHTML = '<option value="">Select Approval Group</option>';
+      formLink.style.display = "none";
+      copyMessage.style.display = "none";
+
+      if (region && salesOrg && data[region][salesOrg]) {
+        const approver = data[region][salesOrg];
+        let option = document.createElement("option");
+        option.value = approver;
+        option.text = approver;
+        approvalGroupDropdown.add(option);
+      }
+    }
+
+    function copyToClipboardAndShowLink() {
+      const approvalGroup = document.getElementById("approvalGroupDropdown").value;
+      const formLink = document.getElementById("formLink");
+      const copyMessage = document.getElementById("copyMessage");
+
+      if (approvalGroup) {
+        navigator.clipboard.writeText(approvalGroup).then(() => {
+          copyMessage.style.display = "block";
+          formLink.style.display = "block";
+        });
+      } else {
+        formLink.style.display = "none";
+        copyMessage.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
